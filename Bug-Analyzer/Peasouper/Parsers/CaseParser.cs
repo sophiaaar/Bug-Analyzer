@@ -13,8 +13,8 @@ namespace Peasouper.Parsers
         public void Parse(XElement response)
         {
             var casesEle = response.Element("cases");
-            if (casesEle == null)
-                throw new XmlException("Expected outer element 'cases' was not found.");
+            //if (casesEle == null)
+                //throw new XmlException("Expected outer element 'cases' was not found.");
             var casesArr = casesEle.Elements("case");
             Cases = casesArr.Select(parseCase).ToArray();
         }

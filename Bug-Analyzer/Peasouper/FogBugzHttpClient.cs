@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Linq;
 using System.Xml.Linq;
+using System.Xml;
 using ModernHttpClient;
 using Peasouper.Exceptions;
 
@@ -29,6 +31,7 @@ namespace Peasouper
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
                     var xml = XElement.Load(stream);
+                    
                     checkForFogBugzError(xml);
                     return xml;
                 }
