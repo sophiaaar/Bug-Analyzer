@@ -7,30 +7,37 @@ client = APIClient('')
 client.user = ''
 client.password = ''
 
-plans = client.send_get('get_plans/2')
-#tests = client.send_get('get_tests/5696')
-#print(plans)
-#plansStr = ''.join((str(v) for v in plans))
+plans = client.send_get('get_plans/2&milestone_id=130')
 
-#planIDsList = list()
+runIdsList = list()
 
+print("getting plans")
 for plan in plans:
 	planID = plan["id"]
-	planWithEntries = client.send_get('get_plan/'+planID)
-	#print(planID)
-#	planIDsList.append(planID)
+	planWithEntries = client.send_get('get_plan/'+str(planID))
 
-#for plan_id in planIDsList:
-#	planWithEntries = client.send_get('get_plan/'+plan_id)
+	entries = planWithEntries["entries"]
+	for entry in entries:
+		runs = entry["runs"]
+		for run in runs:
+			runID = run["id"]
+			runIdsList.append(runID)
 
-#file = open("plansOutput.txt", "w")
-#file.write(plansStr)
-#file.close()
+testIdsList = list()
+print("getting tests")
+for runId in runIdsList:
+	tests = client.send_get('get_tests/'+str(runId))
+	for test in tests:
+		testID = test["id"]
+		testIdsList.append(testID)
 
-#file2 = open("testsOutput.txt", "w")
-#testsStr = ''.join((str(x) for x in tests))
-#file2.write(testsStr)
-#file2.close()
+defectsList = list()
+print("getting defects")
+for testId in testIdsList:
+	results = client.send_get('get_results/'+str(testId))
+	for result in results:
+		defects = result["defects"]
+		defectsList.append(str(defects))
 
 S_FOGBUGZ_URL   = ''
 TOKEN			= ""
@@ -46,12 +53,21 @@ resp = fb.search(q='milestone:"'+ sys.argv[1] +'"',cols="ixBug")
 #print sys.argv[1]
 filename = "listOfBugz.csv"
 
-csv = open(filename, "w")
+bugIdsList = list()
 
+csv = open(filename, "w")
+#check if 
 for case in resp.cases.childGenerator():
 	if case.ixBug.string != None:
 		bugID = case.ixBug.string
+		bugIdsList.append(bugID)
 
-	row = bugID +","+ "\n"
+		if bugID in defectsList:
+			inTestrail = "true"
+		else:
+			inTestrail = "false"
 
-	csv.write(row)
+		row = bugID +","+ inTestrail +","+ "\n"
+		csv.write(row)
+
+
