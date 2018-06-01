@@ -37,9 +37,10 @@ for testId in testIdsList:
 	results = client.send_get('get_results/'+str(testId))
 	for result in results:
 		defects = result["defects"]
-		defectsList.append(str(defects))
+		if defects is not "":
+			defectsList.append(str(defects))
 
-print("number of defects "+len(defectsList))
+print("number of defects "+str(len(defectsList)))
 
 S_FOGBUGZ_URL   = ''
 TOKEN			= ""
@@ -50,7 +51,7 @@ fb = FogBugz(S_FOGBUGZ_URL, TOKEN)
 #fb.logon(S_EMAIL, S_PASSWORD)
 
 #Get all cases in milestone 2018.2
-resp = fb.search(q='milestone:"'+ sys.argv[1] +'"',cols="ixBug,sTitle,sArea")
+resp = fb.search(q='milestone:"'+ sys.argv[1] +'"',cols="ixBug,sTitle,sArea,sStatus,sCustomerEmail")
 #print resp
 #print sys.argv[1]
 filename = "listOfBugz.csv"
@@ -70,6 +71,16 @@ for case in resp.cases.childGenerator():
 	else:
 		area = ""
 
+	if case.sStatus.string != None:
+		status = case.sStatus.string
+	else:
+		status = "Unknown"
+
+	if case.sCustomerEmail.string != None:
+		correspondent = case.sCustomerEmail.string
+	else:
+		correspondent = "Unknown"
+
 	if case.ixBug.string != None:
 		bugID = case.ixBug.string
 		bugIdsList.append(bugID)
@@ -79,7 +90,7 @@ for case in resp.cases.childGenerator():
 		else:
 			inTestrail = "false"
 
-		row = bugID +","+ area +","+ title +","+ inTestrail +","+ "\n"
+		row = bugID +","+ area +","+ title +","+ inTestrail +","+ status +","+ correspondent +","+ "\n"
 		csv.write(row)
 
 
