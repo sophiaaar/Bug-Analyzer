@@ -1,2 +1,2 @@
 # Bug-Analyzer
-Compare bugs found in TestRail with bugs logged in TestRail
+Compare bugs found in Fogbugz with bugs logged in TestRail
